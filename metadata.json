@@ -1,0 +1,6 @@
+{
+  "name": "Salgadinho do Carioca - PDV & Fluxo de Caixa",
+  "description": "Sistema completo de PDV ágil e gestão de fluxo de caixa multi-loja com módulo antifraude para Salgadinho do Carioca.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
