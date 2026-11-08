@@ -102,18 +102,28 @@ export const getProdutos = async (lojaId: string): Promise<Produto[]> => {
   }));
 };
 
-export const saveProduto = (produto: Produto): Produto[] => {
-  const produtos = getProdutos();
-  const index = produtos.findIndex((p) => p.id === produto.id);
-  let updated: Produto[];
-  if (index >= 0) {
-    updated = [...produtos];
-    updated[index] = produto;
-  } else {
-    updated = [produto, ...produtos];
+export const saveProduto = async (produto: Produto): Promise<Produto> => {
+  const { data, error } = await supabase
+    .from('produtos')
+    .update({
+      preco_venda: produto.preco,
+      ativo: produto.disponivel,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', produto.id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Erro ao atualizar produto:', error);
+    throw error;
   }
-  localStorage.setItem(STORAGE_KEYS.PRODUTOS, JSON.stringify(updated));
-  return updated;
+
+  return {
+    ...produto,
+    preco: Number(data.preco_venda),
+    disponivel: data.ativo,
+  };
 };
 
 export const getVendas = (lojaId?: string): Venda[] => {
