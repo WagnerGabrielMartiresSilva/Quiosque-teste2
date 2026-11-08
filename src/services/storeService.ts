@@ -77,17 +77,29 @@ export const setCurrentUser = (user: Usuario): void => {
   localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
 };
 
-export const getProdutos = (): Produto[] => {
-  const data = localStorage.getItem(STORAGE_KEYS.PRODUTOS);
-  if (!data) {
-    localStorage.setItem(STORAGE_KEYS.PRODUTOS, JSON.stringify(PRODUTOS_INICIAIS));
-    return PRODUTOS_INICIAIS;
+export const getProdutos = async (lojaId: string): Promise<Produto[]> => {
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('*')
+    .eq('loja_id', lojaId)
+    .eq('ativo', true)
+    .order('nome');
+
+  if (error) {
+    console.error('Erro ao buscar produtos:', error);
+    throw error;
   }
-  try {
-    return JSON.parse(data);
-  } catch {
-    return PRODUTOS_INICIAIS;
-  }
+
+  return (data ?? []).map((produto) => ({
+    id: produto.id,
+    nome: produto.nome,
+    categoria: produto.categoria,
+    preco: Number(produto.preco_venda),
+    descricao: produto.descricao ?? '',
+    icone: 'utensils',
+    disponivel: produto.ativo,
+    destaque: false,
+  }));
 };
 
 export const saveProduto = (produto: Produto): Produto[] => {
