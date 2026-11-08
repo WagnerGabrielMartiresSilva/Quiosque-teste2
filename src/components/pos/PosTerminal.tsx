@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Produto, ProductCategory, ItemCarrinho, Usuario, Loja, Venda, PaymentMethod } from '../../types';
 import { getProdutos, registrarVenda } from '../../services/storeService';
 import { PaymentModal } from './PaymentModal';
@@ -34,7 +34,33 @@ export const PosTerminal: React.FC<PosTerminalProps> = ({
   currentStore,
   onSaleCompleted,
 }) => {
-  const [produtos] = useState<Produto[]>(() => getProdutos());
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+
+useEffect(() => {
+  let ativo = true;
+
+  const carregarProdutos = async () => {
+    try {
+      const lista = await getProdutos(currentStore.id, true);
+
+      if (ativo) {
+        setProdutos(lista);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar produtos:', error);
+
+      if (ativo) {
+        setProdutos([]);
+      }
+    }
+  };
+
+  carregarProdutos();
+
+  return () => {
+    ativo = false;
+  };
+}, [currentStore.id]);
   const [activeCategory, setActiveCategory] = useState<ProductCategory | 'Todos'>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<ItemCarrinho[]>([]);
