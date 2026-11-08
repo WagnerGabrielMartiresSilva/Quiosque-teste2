@@ -1,5 +1,6 @@
 import { Loja, Usuario, Produto, Venda, FechamentoCaixa, FechamentoStatus, PaymentMethod } from '../types';
 import { LOJAS_INICIAIS, USUARIOS_INICIAIS, PRODUTOS_INICIAIS, VENDAS_INICIAIS, FECHAMENTOS_INICIAIS } from '../data/mockData';
+import { supabase } from '../lib/supabase';
 
 const STORAGE_KEYS = {
   LOJAS: 'sdc_lojas_v1',
